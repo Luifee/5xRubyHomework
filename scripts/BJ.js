@@ -32,8 +32,10 @@ function dealerRound() {
 
 //加總點數
 function sumPoint() {
-	yourPoint = calcPoint(yourDeck);
-	dealerPoint = calcPoint(dealerDeck);
+	let deckA = new Deck(yourDeck);
+	yourPoint = deckA.deckPoint();
+	let deckB = new Deck(dealerDeck);
+	dealerPoint = deckB.deckPoint();
 }
 
 //刷新牌桌
@@ -82,25 +84,25 @@ function checkWinnerBeforeDealerRound() {
 function checkWinnerAfterDealerRound() {
 	//比點數及平手應於dealerRound之後生效
 	switch(true) {
-	//過五關
-	case dealerPoint < 21 && dealerDeck.length == 5:
-		winner = 2;
-		break;
-	//平手
-	case dealerPoint == yourPoint:
-		winner = 3;
-		break;
-	//點數>21
-	case dealerPoint > 21:
-		winner = 1;
-		break;
-	//比點數
-	case dealerPoint > yourPoint:
-		winner = 2;
-		break;
-	default:
-		winner = 0;
-		break;
+		//過五關
+		case dealerPoint < 21 && dealerDeck.length == 5:
+			winner = 2;
+			break;
+		//平手
+		case dealerPoint == yourPoint:
+			winner = 3;
+			break;
+		//點數>21
+		case dealerPoint > 21:
+			winner = 1;
+			break;
+		//比點數
+		case dealerPoint > yourPoint:
+			winner = 2;
+			break;
+		default:
+			winner = 0;
+			break;
 	}
 }
 
@@ -152,10 +154,10 @@ function newGame() {
 	yourDeck.push(deal());
 	dealerDeck.push(deal());
 	yourDeck.push(deal());
-	inGame = true;
 	sumPoint();
 	checkWinnerBeforeDealerRound();
 	showWinStamp();
+	inGame = true;
 	renderGameTable();
 }
 
@@ -172,7 +174,6 @@ function hit() {
 function stand() {
 	inGame = false;
 	dealerDeck.push(deal());
-	checkWinnerAfterDealerRound();
 	dealerRound();
 }
 
@@ -194,52 +195,46 @@ function buildDeck() {
 }
 
 //點數計算邏輯
-function calcPoint(deck) {
-	let point = 0;
-	let theDeck = [];
-	deck.forEach(c => {
-		point += c.cardPoint();
-	});
-	if (point < 12) {
-		deck.forEach(obj => {
-			theDeck.push(obj.cardNumber());
-		});
-		if (theDeck.includes("A")) {
-			point += 10;
-		}
-	}	
-	return point;
-}
+// function calcPoint(deck) {
+// 	let point = 0;
+// 	let theDeck = [];
+// 	deck.forEach(c => {
+// 		point += c.cardPoint();
+// 	});
+// 	if (point < 12) {
+// 		deck.forEach(obj => {
+// 			theDeck.push(obj.cardNumber());
+// 		});
+// 		if (theDeck.includes("A")) {
+// 			point += 10;
+// 		}
+// 	}	
+// 	return point;
+// }
 
 //寫完覺得和function沒兩樣的Deck類別
-// class Deck {
-//  	constructor(number) {
-//  		this.number = number;
-//  		this.yourPoint = Deck.point(yourDeck);
-//  		this.dealerPoint = Deck.point(dealerDeck);
-//  		this.bonus = Deck.bonus();
- 	// }
- 	// bonus() {
- 	// 	switch(this.number) {
- 	// 		case 1:
- 	// 			console.log("Bonus!")
- 	// 			return true;
- 	// 		default:
- 	// 			return false;
- 	// 	}
- 	// }
-//  	static deckPoint(deck) {
-//  		let point = 0;
-//  		deck.forEach(card => {
-// 			point += card.cardPoint();
-// 			if (point < 12 && bonus() === true) {
-// 				point += 10;
-// 			}
-// 		});
-// 		console.log("總計為 "+ point);
-// 		return point;
-//  	}
-// }
+class Deck {
+ 	constructor(cards) {
+ 		this.cards = cards;
+ 	}
+ 	bonus() {
+ 		let points = [];
+ 		this.cards.forEach(aCard => {
+ 			points.push(aCard.cardPoint());
+ 		});
+ 		return points.includes(1);
+	}
+ 	deckPoint() {
+ 		let sum = 0;
+ 		this.cards.forEach(aCard => {
+ 			sum += aCard.cardPoint();
+ 		});
+ 		if (sum < 12 && this.bonus() == true) {
+ 			sum += 10;
+ 		}
+ 			return sum;
+ 	}
+}
 
 //用花色suit與點數number建構一副撲克牌
 class Card {
